@@ -46,11 +46,14 @@ Database & Tabel berhasil disinkronisasi. Server berjalan di http://localhost:30
 Buka browser dan akses alamat berikut:
 http://localhost:3000
 
-📚 Dokumentasi Endpoint API
-MethodEndpointAkses (Header)DeskripsiGET/api/booksPublicMelihat daftar semua buku
-GET/api/books/:idPublicMelihat detail buku spesifik
-POST/api/booksadminMenambah data buku baru
-PUT/api/books/:idadminMengupdate data buku
-DELETE/api/books/:idadminMenghapus buku
-GET/api/admin/borrow-logsadminMelihat riwayat peminjaman & lokasi
-POST/api/borrowuserMeminjam buku (mengurangi stok & catat lokasi)
+## 📚 Dokumentasi Endpoint API
+
+| Method | Endpoint | Akses (Header) | Deskripsi |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/books` | Public | Melihat daftar semua buku |
+| `GET` | `/api/books/:id` | Public | Melihat detail buku spesifik |
+| `POST` | `/api/books` | `x-user-role: admin` | Menambah data buku baru |
+| `PUT` | `/api/books/:id` | `x-user-role: admin` | Mengupdate data buku |
+| `DELETE` | `/api/books/:id` | `x-user-role: admin` | Menghapus buku |
+| `GET` | `/api/admin/borrow-logs` | `x-user-role: admin` | Melihat riwayat peminjaman & lokasi |
+| `POST` | `/api/borrow` | `x-user-role: user` | Meminjam buku (mengurangi stok & catat lokasi) |
