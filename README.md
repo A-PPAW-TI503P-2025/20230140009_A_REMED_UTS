@@ -57,3 +57,25 @@ http://localhost:3000
 | `DELETE` | `/api/books/:id` | `x-user-role: admin` | Menghapus buku |
 | `GET` | `/api/admin/borrow-logs` | `x-user-role: admin` | Melihat riwayat peminjaman & lokasi |
 | `POST` | `/api/borrow` | `x-user-role: user` | Meminjam buku (mengurangi stok & catat lokasi) |
+
+SCREENSHOT ENDPOINT API
+### 1. Screenshot Menambah buku baru
+<img width="1920" height="1080" alt="Screenshot 2026-01-30 095636" src="https://github.com/user-attachments/assets/e831d9d7-f0f4-4a04-ada4-205f2edcda76" />
+### 2. Screenshot Melihat daftar semua buku
+<img width="1920" height="1080" alt="Screenshot 2026-01-30 100018" src="https://github.com/user-attachments/assets/cc6fabb1-9109-4a24-a04f-c65155fb544e" />
+### 3. Melihat detail buku spesifik
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e4e0dcea-4730-455f-a77b-a386ccfacf3b" />
+### 4. Mengupdate data buku
+<img width="1920" height="1080" alt="Screenshot 2026-01-30 100452" src="https://github.com/user-attachments/assets/bd0397f2-b8a1-4e6b-8018-d7f4ee79c065" />
+### 5. Menghapus data buku
+<img width="1920" height="1080" alt="Screenshot 2026-01-30 100556" src="https://github.com/user-attachments/assets/0c080c5b-d6e7-4561-a6aa-447c90687f91" />
+### 6. Meminjam buku (mengurangi stok dan catat lokasi)
+<img width="1920" height="1080" alt="Screenshot 2026-01-30 101040" src="https://github.com/user-attachments/assets/d2068035-b1e8-43cf-82a4-5fbcc4103a71" />
+### 7. Melihat riwayat peminjaman dan lokasi
+<img width="1920" height="1080" alt="Screenshot 2026-01-30 100644" src="https://github.com/user-attachments/assets/91e1ba8c-66eb-4d78-b817-88d607a7535a" />
+
+
+
+
+
+
