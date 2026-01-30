@@ -73,7 +73,9 @@ SCREENSHOT ENDPOINT API
 <img width="1920" height="1080" alt="Screenshot 2026-01-30 101040" src="https://github.com/user-attachments/assets/d2068035-b1e8-43cf-82a4-5fbcc4103a71" />
 ### 7. Melihat riwayat peminjaman dan lokasi ###
 <img width="1920" height="1080" alt="Screenshot 2026-01-30 100644" src="https://github.com/user-attachments/assets/91e1ba8c-66eb-4d78-b817-88d607a7535a" />
+
 ### TAMPILAN WEB ###
+
 1. Tampilan Halaman Utama
 <img width="1920" height="1080" alt="Screenshot 2026-01-30 102508" src="https://github.com/user-attachments/assets/363a900d-1fd0-4638-bf1b-6c2047279295" />
 2. Tampilan Halaman Admin
@@ -81,6 +83,15 @@ SCREENSHOT ENDPOINT API
 <img width="1920" height="1080" alt="Screenshot 2026-01-30 102542" src="https://github.com/user-attachments/assets/c755261e-a7cc-48f6-a0be-2be30ae97c24" />
 3. Tampilan Halaman User
 <img width="1920" height="1080" alt="Screenshot 2026-01-30 102602" src="https://github.com/user-attachments/assets/b5d06f3c-b4ff-4aea-83ee-6a914df2b885" />
+
+### TAMPILAN DATABASE PHP MY ADMIN ###
+
+1. TAMPILAN DAFTAR DATA BUKU
+<img width="1920" height="1080" alt="Screenshot 2026-01-30 103226" src="https://github.com/user-attachments/assets/aa7a3a76-90ea-4386-ba34-cc0f78009136" />
+2. TAMPILAN DAFTAR PEMINJAMAN BUKU
+<img width="1920" height="1080" alt="Screenshot 2026-01-30 103238" src="https://github.com/user-attachments/assets/2186d120-1bf9-4a41-9c5b-60adbc8a9f2f" />
+
+
 
 
 
