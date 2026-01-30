@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meja Pustakawan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --header-bg: #1e3d2f;
+            --gold: #d4af37;
+        }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background-color: #f4f1ea; /* Cream Background */
+            color: #333; 
+        }
+        .header { 
+            background: var(--header-bg);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border-bottom: 5px solid var(--gold);
+        }
+        .header h2 { margin: 0; font-family: 'Playfair Display', serif; }
+        .btn-back { 
+            text-decoration: none; 
+            color: var(--header-bg); 
+            background: var(--gold); 
+            padding: 8px 20px; 
+            border-radius: 4px; 
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-back:hover { background: #fff; }
+
+        .card { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05); 
+            margin-bottom: 30px; 
+            border-left: 5px solid var(--header-bg);
+        }
+        h3 { 
+            margin-top: 0; 
+            color: var(--header-bg); 
+            border-bottom: 2px solid #eee; 
+            padding-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Form Styling */
+        .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        input { 
+            padding: 12px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            background: #fafafa;
+            font-family: inherit;
+        }
+        input:focus { outline: 2px solid var(--gold); border-color: transparent; }
+        
+        button { 
+            padding: 12px 25px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85em;
+        }
+        .btn-save { background-color: var(--header-bg); color: white; }
+        .btn-save:hover { background-color: #14291f; transform: scale(1.02); }
+        .btn-delete { background-color: #a71d2a; color: white; padding: 6px 12px; border-radius: 3px; font-size: 0.8em;}
+        .btn-map { background-color: #3498db; color: white; text-decoration: none; padding: 5px 10px; border-radius: 3px; font-size: 0.85em;}
+
+        /* Table Styling (Ledger Style) */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+        th { 
+            background-color: #e0e0e0; 
+            color: #333; 
+            padding: 15px; 
+            text-align: left; 
+            font-weight: 600;
+            border-bottom: 2px solid #999;
+        }
+        td { padding: 15px; border-bottom: 1px solid #eee; color: #555; }
+        tr:hover { background-color: #f9f9f9; }
+        
+        /* Badge for ID */
+        .id-badge { background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h2>👨‍💼 Meja Pustakawan</h2>
+            <small style="opacity: 0.8">Panel Administrasi & Manajemen Stok</small>
+        </div>
+        <a href="index.html" class="btn-back">Logout</a>
+    </div>
+
+    <div class="card">
+        <h3>📚 Katalogisasi Buku Baru</h3>
+        <div class="input-group">
+            <input type="text" id="title" placeholder="Judul Buku" style="flex: 2;">
+            <input type="text" id="author" placeholder="Penulis" style="flex: 2;">
+            <input type="number" id="stock" placeholder="Stok" value="10" style="width: 80px;">
+            <button class="btn-save" onclick="addBook()">+ Tambah ke Rak</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>📦 Inventaris Rak Buku</h3>
+        <table id="adminTable">
+            <thead>
+                <tr>
+                    <th width="5%">ID</th>
+                    <th>Judul Buku</th>
+                    <th>Penulis</th>
+                    <th width="10%">Stok</th>
+                    <th width="10%">Aksi</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>📍 Log Peminjaman & Pelacakan</h3>
+        <table id="historyTable">
+            <thead>
+                <tr>
+                    <th>Waktu Catat</th>
+                    <th>ID Peminjam</th>
+                    <th>Buku yang Melintas</th>
+                    <th>Koordinat GPS</th>
+                    <th>Peta</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        async function loadBooks() {
+            try {
+                const res = await fetch(`${API_URL}/books`);
+                const books = await res.json();
+                const tbody = document.querySelector('#adminTable tbody');
+                tbody.innerHTML = '';
+                
+                books.forEach(book => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><span class="id-badge">#${book.id}</span></td>
+                            <td style="font-weight:600; color:#2c3e50">${book.title}</td>
+                            <td>${book.author}</td>
+                            <td>${book.stock} Unit</td>
+                            <td><button class="btn-delete" onclick="deleteBook(${book.id})">Hapus</button></td>
+                        </tr>
+                    `;
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadHistory() {
+            try {
+                const res = await fetch(`${API_URL}/admin/borrow-logs`, {
+                    headers: { 'x-user-role': 'admin' }
+                });
+                const logs = await res.json();
+                const tbody = document.querySelector('#historyTable tbody');
+                tbody.innerHTML = '';
+
+                if (logs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; font-style:italic;">Belum ada catatan peminjaman.</td></tr>';
+                    return;
+                }
+
+                logs.forEach(log => {
+                    const date = new Date(log.borrowDate).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+                    const bookTitle = log.Book ? log.Book.title : '<em style="color:#a71d2a">Buku Dihapus</em>';
+                    
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${date}</td>
+                            <td><span class="id-badge">User-${log.userId}</span></td>
+                            <td>${bookTitle}</td>
+                            <td style="font-family:monospace; font-size:0.9em;">${log.latitude.toFixed(4)}, ${log.longitude.toFixed(4)}</td>
+                            <td>
+                                <a href="http://maps.google.com/maps?q=${log.latitude},${log.longitude}" 
+                                   target="_blank" class="btn-map">
+                                   📍 Lacak
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (e) { console.error("Gagal load history:", e); }
+        }
+
+        async function addBook() {
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+            const stock = document.getElementById('stock').value;
+
+            if(!title || !author) return alert("Isi semua field!");
+
+            await fetch(`${API_URL}/books`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-user-role': 'admin' },
+                body: JSON.stringify({ title, author, stock })
+            });
+            
+            document.getElementById('title').value = '';
+            document.getElementById('author').value = '';
+            loadBooks();
+        }
+
+        async function deleteBook(id) {
+            if(confirm('Arsipkan/Hapus buku ini dari database?')) {
+                await fetch(`${API_URL}/books/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'x-user-role': 'admin' }
+                });
+                loadBooks();
+            }
+        }
+
+        loadBooks();
+        loadHistory();
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Perpustakaan Utama</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3d2f; /* Deep Emerald Green */
+            --accent: #d4af37; /* Gold */
+            --wood: #5d4037;   /* Wood */
+            --cream: #f4f1ea;  /* Old Paper */
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--primary);
+            background-image: radial-gradient(#264d3b 1px, transparent 1px);
+            background-size: 20px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: var(--cream);
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 350px;
+            border: 8px solid var(--wood);
+            position: relative;
+        }
+        /* Efek jahitan buku */
+        .card::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            bottom: 15px;
+            right: 15px;
+            border: 2px dashed #bcaaa4;
+            pointer-events: none;
+        }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        p { color: #6d6d6d; margin-bottom: 30px; font-style: italic; }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 2;
+        }
+        .btn-admin {
+            background-color: var(--wood);
+            color: var(--cream);
+            border-bottom: 4px solid #3e2723;
+        }
+        .btn-admin:hover { transform: translateY(2px); border-bottom: 2px solid #3e2723; }
+        
+        .btn-user {
+            background-color: var(--primary);
+            color: var(--accent);
+            border-bottom: 4px solid #14291f;
+        }
+        .btn-user:hover { transform: translateY(2px); border-bottom: 2px solid #14291f; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🏛️ Library</h1>
+        <p>Sistem Manajemen & Peminjaman</p>
+        <hr style="border: 0; border-top: 1px solid #ccc; margin-bottom: 20px;">
+        <a href="admin.html" class="btn btn-admin">👨‍💼 Masuk sebagai Pustakawan</a>
+        <a href="user.html" class="btn btn-user">📖 Masuk sebagai Pembaca</a>
+    </div>
+</body>
+</html>

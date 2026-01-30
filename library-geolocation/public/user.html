@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruang Baca</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f5f5f5;
+            --wood: #5d4037;
+            --cream: #fffdf5;
+        }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            max-width: 1000px; 
+            margin: 20px auto; 
+            padding: 20px; 
+            background-color: var(--bg-color);
+            background-image: linear-gradient(#e8e8e8 1px, transparent 1px), linear-gradient(90deg, #e8e8e8 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .header { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            margin-bottom: 40px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 5px solid var(--wood);
+        }
+        .header h2 { margin: 0; font-family: 'Playfair Display', serif; color: #333; font-size: 1.8em; }
+        .btn-back { text-decoration: none; color: #666; font-weight: 600; border: 1px solid #ddd; padding: 8px 15px; border-radius: 20px; transition: 0.3s;}
+        .btn-back:hover { background: #333; color: white; border-color: #333; }
+
+        /* GRID RAK BUKU */
+        .book-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            gap: 40px; 
+            padding: 20px;
+        }
+
+        /* CARD BUKU - Didesain seperti cover buku fisik */
+        .book-card { 
+            background: var(--cream);
+            border-radius: 5px 15px 15px 5px; /* Round right corners */
+            position: relative;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: 320px;
+            box-shadow: 
+                5px 5px 15px rgba(0,0,0,0.15), /* Shadow drop */
+                inset 10px 0 20px rgba(0,0,0,0.1); /* Spine shadow effect */
+            border-left: 8px solid rgba(0,0,0,0.2); /* Spine visual */
+            overflow: hidden;
+        }
+        
+        .book-card:hover { 
+            transform: translateY(-10px) rotateY(-5deg); 
+            box-shadow: 10px 15px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Bagian Cover Atas (Warna-warni) */
+        .cover-art {
+            flex: 2;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            background: #2c3e50; /* Default fallback */
+            position: relative;
+        }
+        
+        /* Judul Buku di Cover */
+        .book-title { 
+            font-family: 'Playfair Display', serif; 
+            font-size: 1.4em; 
+            line-height: 1.2;
+            z-index: 2;
+        }
+        
+        /* Bagian Bawah (Detail & Tombol) */
+        .book-details {
+            padding: 15px;
+            background: white;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-top: 2px solid rgba(0,0,0,0.05);
+        }
+
+        .book-author { 
+            color: #666; 
+            font-size: 0.9em; 
+            font-style: italic; 
+            margin-bottom: 5px; 
+        }
+
+        .stock-badge { 
+            display: inline-block;
+            font-size: 0.75em; 
+            color: #333;
+            background: #eee;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            width: fit-content;
+        }
+
+        button { 
+            width: 100%; 
+            padding: 10px; 
+            background-color: var(--wood); 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8em;
+            transition: 0.2s;
+        }
+        button:hover { background-color: #3e2723; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        /* Toast Notification Styling */
+        #status { 
+            position: fixed; 
+            top: 20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: #333; 
+            color: white; 
+            padding: 15px 30px; 
+            border-radius: 50px; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3); 
+            display: none; 
+            z-index: 1000;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h2>🏛️ Katalog Ruang Baca</h2>
+            <small style="color: #666">Selamat datang, Tamu (ID: 101)</small>
+        </div>
+        <a href="index.html" class="btn-back">Keluar Ruangan</a>
+    </div>
+
+    <div id="bookContainer" class="book-grid">
+        </div>
+
+    <div id="status"></div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        // Palette warna cover buku (Vintage style)
+        const coverColors = [
+            'linear-gradient(135deg, #2c3e50, #4ca1af)', // Blue
+            'linear-gradient(135deg, #42275a, #734b6d)', // Purple
+            'linear-gradient(135deg, #134e5e, #71b280)', // Green
+            'linear-gradient(135deg, #8e2de2, #4a00e0)', // Violet
+            'linear-gradient(135deg, #c0392b, #8e44ad)', // Red/Purple
+            'linear-gradient(135deg, #d35400, #f39c12)', // Orange
+            'linear-gradient(135deg, #200122, #6f0000)', // Dark Red
+            'linear-gradient(135deg, #304352, #d7d2cc)'  // Grey
+        ];
+
+        function getRandomCover() {
+            return coverColors[Math.floor(Math.random() * coverColors.length)];
+        }
+
+        function showToast(msg) {
+            const el = document.getElementById('status');
+            el.innerText = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        async function loadBooks() {
+            const res = await fetch(`${API_URL}/books`);
+            const books = await res.json();
+            const container = document.getElementById('bookContainer');
+            container.innerHTML = '';
+
+            books.forEach((book, index) => {
+                const isHabis = book.stock <= 0;
+                // Pilih warna berdasarkan ID atau Index supaya konsisten saat reload
+                const bgStyle = coverColors[book.id % coverColors.length];
+
+                container.innerHTML += `
+                    <div class="book-card">
+                        <div class="cover-art" style="background: ${bgStyle}">
+                            <div class="book-title">${book.title}</div>
+                        </div>
+                        <div class="book-details">
+                            <div>
+                                <div class="book-author">✍️ ${book.author}</div>
+                                <span class="stock-badge">Stok: ${book.stock}</span>
+                            </div>
+                            <button onclick="borrowBook(${book.id})" ${isHabis ? 'disabled' : ''}>
+                                ${isHabis ? 'Dipinjam Semua' : '📖 Pinjam Buku'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function borrowBook(bookId) {
+            if(!navigator.geolocation) return alert("Browser tidak mendukung lokasi");
+
+            showToast("📍 Mengambil lokasi Anda...");
+
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                try {
+                    const res = await fetch(`${API_URL}/borrow`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'x-user-role': 'user', 
+                            'x-user-id': '101' 
+                        },
+                        body: JSON.stringify({ 
+                            bookId, 
+                            latitude: pos.coords.latitude, 
+                            longitude: pos.coords.longitude 
+                        })
+                    });
+
+                    const data = await res.json();
+                    if(res.ok) {
+                        showToast("✅ Berhasil meminjam! Selamat membaca.");
+                        loadBooks();
+                    } else {
+                        showToast("❌ Gagal: " + data.message);
+                    }
+                } catch (e) { showToast("Error koneksi"); }
+            }, () => showToast("Gagal mengambil lokasi! Pastikan GPS aktif."));
+        }
+
+        loadBooks();
+    </script>
+</body>
+</html>
