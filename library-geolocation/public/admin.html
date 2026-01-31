@@ -16,7 +16,7 @@
             max-width: 1000px; 
             margin: 0 auto; 
             padding: 20px; 
-            background-color: #f4f1ea; /* Cream Background */
+            background-color: #f4f1ea;
             color: #333; 
         }
         .header { 
@@ -59,7 +59,6 @@
             font-family: 'Playfair Display', serif;
         }
         
-        /* Form Styling */
         .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
         input { 
             padding: 12px; 
@@ -81,12 +80,22 @@
             letter-spacing: 1px;
             font-size: 0.85em;
         }
+        /* Tombol Save (Hijau) */
         .btn-save { background-color: var(--header-bg); color: white; }
         .btn-save:hover { background-color: #14291f; transform: scale(1.02); }
+        
+        /* Tombol Update (Emas/Kuning) - Muncul saat Edit */
+        .btn-update { background-color: #f39c12; color: white; }
+        .btn-update:hover { background-color: #d68910; }
+
+        /* Tombol Cancel (Abu) */
+        .btn-cancel { background-color: #95a5a6; color: white; display: none; }
+        .btn-cancel:hover { background-color: #7f8c8d; }
+
         .btn-delete { background-color: #a71d2a; color: white; padding: 6px 12px; border-radius: 3px; font-size: 0.8em;}
+        .btn-edit { background-color: #2980b9; color: white; padding: 6px 12px; border-radius: 3px; font-size: 0.8em; margin-right: 5px;}
         .btn-map { background-color: #3498db; color: white; text-decoration: none; padding: 5px 10px; border-radius: 3px; font-size: 0.85em;}
 
-        /* Table Styling (Ledger Style) */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
         th { 
             background-color: #e0e0e0; 
@@ -98,8 +107,6 @@
         }
         td { padding: 15px; border-bottom: 1px solid #eee; color: #555; }
         tr:hover { background-color: #f9f9f9; }
-        
-        /* Badge for ID */
         .id-badge { background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; font-family: monospace; }
     </style>
 </head>
@@ -113,12 +120,14 @@
     </div>
 
     <div class="card">
-        <h3>📚 Katalogisasi Buku Baru</h3>
+        <h3 id="formTitle">📚 Katalogisasi Buku Baru</h3>
         <div class="input-group">
-            <input type="text" id="title" placeholder="Judul Buku" style="flex: 2;">
+            <input type="hidden" id="bookId"> <input type="text" id="title" placeholder="Judul Buku" style="flex: 2;">
             <input type="text" id="author" placeholder="Penulis" style="flex: 2;">
             <input type="number" id="stock" placeholder="Stok" value="10" style="width: 80px;">
-            <button class="btn-save" onclick="addBook()">+ Tambah ke Rak</button>
+            
+            <button id="btnSubmit" class="btn-save" onclick="handleFormSubmit()">+ Tambah</button>
+            <button id="btnCancel" class="btn-cancel" onclick="resetForm()">Batal</button>
         </div>
     </div>
 
@@ -131,7 +140,7 @@
                     <th>Judul Buku</th>
                     <th>Penulis</th>
                     <th width="10%">Stok</th>
-                    <th width="10%">Aksi</th>
+                    <th width="15%">Aksi</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -156,6 +165,7 @@
 
     <script>
         const API_URL = 'http://localhost:3000/api';
+        let isEditing = false; // Status apakah sedang mode edit atau tambah
 
         async function loadBooks() {
             try {
@@ -171,7 +181,10 @@
                             <td style="font-weight:600; color:#2c3e50">${book.title}</td>
                             <td>${book.author}</td>
                             <td>${book.stock} Unit</td>
-                            <td><button class="btn-delete" onclick="deleteBook(${book.id})">Hapus</button></td>
+                            <td>
+                                <button class="btn-edit" onclick="startEdit(${book.id}, '${book.title}', '${book.author}', ${book.stock})">Edit ✏️</button>
+                                <button class="btn-delete" onclick="deleteBook(${book.id})">Hapus</button>
+                            </td>
                         </tr>
                     `;
                 });
@@ -214,22 +227,71 @@
             } catch (e) { console.error("Gagal load history:", e); }
         }
 
-        async function addBook() {
+        // Fungsi Utama Handle Submit (Bisa Create atau Update)
+        async function handleFormSubmit() {
+            const id = document.getElementById('bookId').value;
             const title = document.getElementById('title').value;
             const author = document.getElementById('author').value;
             const stock = document.getElementById('stock').value;
 
             if(!title || !author) return alert("Isi semua field!");
 
-            await fetch(`${API_URL}/books`, {
-                method: 'POST',
+            const payload = { title, author, stock };
+            let url = `${API_URL}/books`;
+            let method = 'POST';
+
+            // Jika sedang Mode Edit, ubah URL dan Method
+            if (isEditing) {
+                url = `${API_URL}/books/${id}`;
+                method = 'PUT';
+            }
+
+            await fetch(url, {
+                method: method,
                 headers: { 'Content-Type': 'application/json', 'x-user-role': 'admin' },
-                body: JSON.stringify({ title, author, stock })
+                body: JSON.stringify(payload)
             });
             
+            resetForm();
+            loadBooks();
+        }
+
+        // Fungsi Memulai Edit (Dipanggil saat tombol Edit diklik)
+        function startEdit(id, title, author, stock) {
+            isEditing = true;
+            document.getElementById('bookId').value = id;
+            document.getElementById('title').value = title;
+            document.getElementById('author').value = author;
+            document.getElementById('stock').value = stock;
+
+            // Ubah Tampilan Tombol
+            document.getElementById('formTitle').innerText = "✏️ Edit Buku";
+            const btn = document.getElementById('btnSubmit');
+            btn.innerText = "Simpan Perubahan";
+            btn.classList.remove('btn-save');
+            btn.classList.add('btn-update'); // Jadi warna kuning/emas
+            
+            document.getElementById('btnCancel').style.display = 'inline-block';
+            
+            // Scroll ke atas agar user lihat form
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Fungsi Reset Form ke Kondisi Awal
+        function resetForm() {
+            isEditing = false;
+            document.getElementById('bookId').value = '';
             document.getElementById('title').value = '';
             document.getElementById('author').value = '';
-            loadBooks();
+            document.getElementById('stock').value = '10';
+
+            document.getElementById('formTitle').innerText = "📚 Katalogisasi Buku Baru";
+            const btn = document.getElementById('btnSubmit');
+            btn.innerText = "+ Tambah ke Rak";
+            btn.classList.remove('btn-update');
+            btn.classList.add('btn-save'); // Kembali hijau
+            
+            document.getElementById('btnCancel').style.display = 'none';
         }
 
         async function deleteBook(id) {
